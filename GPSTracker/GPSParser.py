@@ -31,6 +31,9 @@ for opt, arg in options:
     if opt=='-h':
         print_usage()
         sys.exit(0)
+        
+def stringtrunk(string, length):
+    return (string[0+i:length+i] for i in range(0, len(string), length))
 
 acc = [] 
 hum = [] 
@@ -42,6 +45,7 @@ outfile = str(remainder[0])
 infile = str(remainder[1])
 
 outcsv = "{0}.csv".format(outfile)
+print("hello")
 
 with open(outcsv, 'w', newline = "") as datafile:
     writer = csv.writer(datafile)
@@ -58,6 +62,10 @@ with open(outcsv, 'w', newline = "") as datafile:
         y = column[5]
         z = column[6]
         mag = column[7]
+        latlist = list(stringtrunk(column[8], 1))
+        longlist = list(stringtrunk(column[9], 1))
+        print(longlist)
+        print(latlist)
         lat = "{0} N".format(column[8])
         long = "{0} W".format(column[9])
         speed = column[10]
@@ -76,12 +84,12 @@ fig0, (ax0, ax1) = plt.subplots(1, 2)
 
 ax0.hist(acc, nbins, range=[0, max(acc)+5], label = "") 
 ax0.set_title("Acceleration")
-ax0.set_xlabel("Acceleration Magnitude") 
+ax0.set_xlabel("Acceleration (g's)") 
 ax0.set_ylabel("") 
 
 y0, x0, _ = ax1.hist(acc, nbins, range=[0, max(acc)+5], label = "") 
 ax1.set_title("Acceleration") 
-ax1.set_xlabel("Acceleration Magnitude") 
+ax1.set_xlabel("Acceleration (g's)") 
 ax1.set_ylabel("") 
 ax1.set_yscale("log")
 
