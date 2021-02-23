@@ -15,7 +15,7 @@ tmpargv = sys.argv
 sys.argv = []
 import getopt
 sys.argv = tmpargv
-import matplotlib.pyplot as plt 
+import matplotlib.pyplot as plt
 import csv
 
 #List arguments
@@ -23,7 +23,7 @@ def print_usage():
     print("\nUsage: {0} <output file base name> <input csv file>".format(sys.argv[0]))
     print("Arguments: ")
     print('\t-h: this help message')
-    
+
 options, remainder = getopt.gnu_getopt(sys.argv[1:], 'h')
 
 # Parse the command line arguments
@@ -31,13 +31,14 @@ for opt, arg in options:
     if opt=='-h':
         print_usage()
         sys.exit(0)
-        
+
 def stringtrunk(string, length):
     return (string[0+i:length+i] for i in range(0, len(string), length))
 
-acc = [] 
-hum = [] 
-temp = [] 
+acc = []
+hum = []
+temp = []
+s = []
 
 nbins = 100
 
@@ -45,11 +46,10 @@ outfile = str(remainder[0])
 infile = str(remainder[1])
 
 outcsv = "{0}.csv".format(outfile)
-print("hello")
 
 with open(outcsv, 'w', newline = "") as datafile:
     writer = csv.writer(datafile)
-    writer.writerow(['Time', 'Temperature', 'Humidity', 'X', 'Y', 'Z', 
+    writer.writerow(['Time', 'Temperature', 'Humidity', 'X', 'Y', 'Z',
                     'Mag', 'Lat', 'Long', 'Speed'])
     file = open(infile, "r")
     for line in file:
@@ -64,40 +64,39 @@ with open(outcsv, 'w', newline = "") as datafile:
         mag = column[7]
         latlist = list(stringtrunk(column[8], 1))
         longlist = list(stringtrunk(column[9], 1))
-        print(longlist)
-        print(latlist)
         lat = "{0} N".format(column[8])
         long = "{0} W".format(column[9])
         speed = column[10]
         writer.writerow([time, temperature, humidity, x, y, z, mag, lat, long, speed])
-    
+
     file.close()
 
-with open(outcsv, 'r', newline = "") as datafile: 
-    reader = csv.DictReader(datafile) 
-    for row in reader: 
-        acc.append(float(row['Mag'])) 
-        hum.append(float(row['Humidity'])) 
-        temp.append(float(row['Temperature'])) 
-        
-fig0, (ax0, ax1) = plt.subplots(1, 2) 
+with open(outcsv, 'r', newline = "") as datafile:
+    reader = csv.DictReader(datafile)
+    for row in reader:
+        acc.append(float(row['Mag']))
+        hum.append(float(row['Humidity']))
+        temp.append(float(row['Temperature']))
+        s.append(float(row['Speed'])*1.15078)
 
-ax0.hist(acc, nbins, range=[0, max(acc)+5], label = "") 
+fig0, (ax0, ax1) = plt.subplots(1, 2)
+
+ax0.hist(acc, nbins, range=[0, max(acc)+5], label = "")
 ax0.set_title("Acceleration")
-ax0.set_xlabel("Acceleration (g's)") 
-ax0.set_ylabel("") 
+ax0.set_xlabel("Acceleration (g's)")
+ax0.set_ylabel("")
 
-y0, x0, _ = ax1.hist(acc, nbins, range=[0, max(acc)+5], label = "") 
-ax1.set_title("Acceleration") 
-ax1.set_xlabel("Acceleration (g's)") 
-ax1.set_ylabel("") 
+y0, x0, _ = ax1.hist(acc, nbins, range=[0, max(acc)+5], label = "")
+ax1.set_title("Acceleration")
+ax1.set_xlabel("Acceleration (g's)")
+ax1.set_ylabel("")
 ax1.set_yscale("log")
 
 ax1.set_ylim([0.5, y0.max() * 10])
 
-plt.savefig('{0}_acc.png'.format(outfile)) 
+plt.savefig('{0}_acc.png'.format(outfile))
 
-fig1, (ax0, ax1) = plt.subplots(1, 2) 
+fig1, (ax0, ax1) = plt.subplots(1, 2)
 
 ax0.hist(hum, nbins, range=[min(hum) - 5, max(hum) + 5], label = "")
 ax0.set_title("Humidity")
@@ -106,7 +105,7 @@ ax0.set_ylabel("")
 
 y1, x1, _ = ax1.hist(hum, nbins, range=[min(hum) - 5, max(hum) + 5], label = "")
 ax1.set_title("Humidity")
-ax1.set_xlabel("Relative Humidity (%)") 
+ax1.set_xlabel("Relative Humidity (%)")
 ax1.set_ylabel("")
 ax1.set_yscale("log")
 
@@ -131,6 +130,19 @@ ax1.set_ylim([0.5,  y2.max() * 10])
 
 plt.savefig('{0}_temp.png'.format(outfile))
 
-        
-        
-        
+fig3, (ax0, ax1) = plt.subplots(1, 2)
+
+ax0.hist(s, nbins, range=[0, max(s) + 5], label = "")
+ax0.set_title("Speed")
+ax0.set_xlabel("Speed (mph)")
+ax0.set_ylabel("")
+
+y2, x2, _ = ax1.hist(s, nbins, range=[0, max(s) + 5], label = "")
+ax1.set_title("Speed")
+ax1.set_xlabel("Speed (mph)")
+ax1.set_ylabel("")
+ax1.set_yscale("log")
+
+ax1.set_ylim([0.5,  y2.max() * 10])
+
+plt.savefig('{0}_speed.png'.format(outfile))
