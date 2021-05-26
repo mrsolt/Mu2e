@@ -64,8 +64,10 @@ with open(outcsv, 'w', newline = "") as datafile:
         mag = column[7]
         latlist = list(stringtrunk(column[8], 1))
         longlist = list(stringtrunk(column[9], 1))
-        lat = "{0} N".format(column[8])
-        long = "{0} W".format(column[9])
+        #lat = "{0} N".format(column[8])
+        #long = "{0} W".format(column[9])
+        lat = "{0}{1} {2}{3}{4}{5}{6}{7}{8} N".format(latlist[0], latlist[1], latlist[2], latlist[3], latlist[4], latlist[5], latlist[6], latlist[7], latlist[8])
+        long = "{0}{1} {2}{3}{4}{5}{6}{7}{8} W".format(longlist[0], longlist[1], longlist[2], longlist[3], longlist[4], longlist[5], longlist[6], longlist[7], longlist[8])
         speed = column[10]
         writer.writerow([time, temperature, humidity, x, y, z, mag, lat, long, speed])
 
